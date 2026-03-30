@@ -265,11 +265,11 @@ class WordData(
         val isEmailField = InputTypeUtils.isEmailVariation(inputAttributes.mInputType and InputType.TYPE_MASK_VARIATION)
         if (inputAttributes.mIsPasswordField || inputAttributes.mNoLearning || isEmailField)
             return false // probably some more inputAttributes to consider
-        if (suggestions.first().mSourceDict.mDictType == Dictionary.TYPE_CONTACTS)
+        if (suggestions.firstOrNull()?.mSourceDict?.mDictType == Dictionary.TYPE_CONTACTS)
             return false
         val matchingSuggestions = suggestions.filter { it.mWord == (targetWord ?: usedWord) }
-        if (matchingSuggestions.none { it.mKindAndFlags and 0xFF != KIND_SHORTCUT })
-            return false
+        if (matchingSuggestions.all { (it.mKindAndFlags and 0xFF) == KIND_SHORTCUT })
+            return false // we want at least one non-shortcut
         val ignoreWords = GestureDataGatheringSettings.getWordExclusions(context)
         // how to deal with the ignore list?
         // check targetWord and first 5 suggestions?
