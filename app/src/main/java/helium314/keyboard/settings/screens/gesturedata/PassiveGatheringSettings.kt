@@ -65,6 +65,7 @@ import helium314.keyboard.settings.dialogs.ThreeButtonAlertDialog
 import kotlinx.coroutines.launch
 import kotlin.collections.plus
 import androidx.core.graphics.toColorInt
+import helium314.keyboard.latin.common.Links
 import helium314.keyboard.settings.painterResourceCompat
 
 // functionality for gesture data gathering as part of the NLNet Project https://nlnet.nl/project/GestureTyping/
@@ -135,7 +136,7 @@ fun PassiveGatheringSettings() {
                         val text = stringResource(
                             R.string.gesture_data_passive_gathering_review_message,
                             stringResource(R.string.gesture_data_review_screen_title),
-                            "https://codeberg.org/eclexic/swipe-o-scope"
+                            Links.SWIPE_O_SCOPE
                         )
                         Text(AnnotatedString.fromHtml(text))
                     }

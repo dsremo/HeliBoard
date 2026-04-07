@@ -60,7 +60,7 @@ object PassiveGatheringCache {
     // currently only used when entering inline emoji search
     fun removeLast(word: String) {
         if (cachedWords.last().usedWord != word) return
-            Log.i(TAG, "removing $word")
+        Log.i(TAG, "removing $word")
         cachedWords.removeAt(cachedWords.lastIndex)
         updateIcon()
     }
