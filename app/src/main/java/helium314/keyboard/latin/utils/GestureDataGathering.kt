@@ -39,7 +39,8 @@ import kotlinx.serialization.json.Json
 //   but we probably (?) want data to stay in case of restart input (triggered by the app or system, possibly in connection with e.g. undo)
 //  what about rotation?
 //  what about switching app with keyboard open (especially connectbot that leaves keyboard open, but also others)
-//   this "always show keyboard" option that might come
+//   consider this "always show keyboard" option that might come
+//  in case of doubt: better discard too often instead of keeping data
 fun isInActiveGatheringMode(editorInfo: EditorInfo) =
     dictTestImeOption == editorInfo.privateImeOptions && gestureDataActiveFacilitator != null
 
