@@ -39,7 +39,7 @@ object GestureDataGatheringSettings {
     private const val PREF_DELETED_ACTIVE = "gesture_data_deleted_active_words"
     private const val PREF_PASSIVE_NOTIFY_COUNT = "gesture_data_passive_notify_count"
     const val PREF_PASSIVE_ENABLED = "gesture_data_passive_gathering_enabled"
-    const val PREF_PASSIVE_SAVE_ON_BUTTON = "gesture_data_passive_gathering_save_on_button" // todo: expose in UI
+    private const val PREF_PASSIVE_SAVE_ON_BUTTON = "gesture_data_passive_gathering_save_on_button"
     const val PREF_PASSIVE_DISABLED_BEFORE = "gesture_data_passive_gathering_disabled_before"
     private const val PREF_END_NOTIFICATION_LAST_SHOWN = "gesture_data_end_notification_shown"
     private const val PREF_SHOW_PROMOTION_DIALOG_NEXT = "gesture_data_show_promotion_dialog_next_time"
@@ -111,7 +111,13 @@ object GestureDataGatheringSettings {
         context.prefs().edit { putBoolean(PREF_APP_EXCLUSIONS_INCLUDE_BY_DEFAULT, value) }
 
     fun getAppIncludeByDefault(context: Context) =
-        context.prefs().getBoolean(PREF_APP_EXCLUSIONS_INCLUDE_BY_DEFAULT, false)
+        context.prefs().getBoolean(PREF_APP_EXCLUSIONS_INCLUDE_BY_DEFAULT, true)
+
+    fun isOptInMode(context: Context) =
+        context.prefs().getBoolean(PREF_PASSIVE_SAVE_ON_BUTTON, true)
+
+    fun setOptInMode(context: Context, value: Boolean) =
+        context.prefs().edit { putBoolean(PREF_PASSIVE_SAVE_ON_BUTTON, value) }
 
     fun isForbiddenForDataGathering(packageName: String?, context: Context): Boolean {
         val exclusions = getAppExclusions(context)

@@ -77,6 +77,7 @@ import helium314.keyboard.settings.painterResourceCompat
 fun PassiveGatheringSettings() {
     val ctx = LocalContext.current
     var passiveGathering by remember { mutableStateOf(GestureDataGatheringSettings.isPassiveGatheringEnabled(ctx.prefs())) }
+    var passiveGatheringOptIn by remember { mutableStateOf(GestureDataGatheringSettings.isOptInMode(ctx)) }
     var showInfoDialog by remember { mutableStateOf(false) }
     var showExcludedWordsDialog by remember { mutableStateOf(false) }
     var showIncludedAppsDialog by remember { mutableStateOf(false) }
@@ -95,6 +96,16 @@ fun PassiveGatheringSettings() {
             Text(stringResource(R.string.gesture_data_passive_gathering_allowed_apps, allowedCount), style = MaterialTheme.typography.bodySmall)
         }
         Switch(passiveGathering, { passiveGathering = it; GestureDataGatheringSettings.setPassiveGatheringEnabled(ctx.prefs(), it) })
+    }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .clickable { passiveGatheringOptIn = !passiveGatheringOptIn }
+            .fillMaxWidth()
+    ) {
+        Text(stringResource(R.string.gesture_data_passive_gathering_manual_save))
+        Switch(passiveGatheringOptIn, { passiveGatheringOptIn = it; GestureDataGatheringSettings.setOptInMode(ctx, it) })
     }
     ButtonWithText(stringResource(R.string.gesture_data_passive_gathering_info), Modifier.fillMaxWidth()) { showInfoDialog = true }
     ButtonWithText(stringResource(R.string.gesture_data_passive_excluded_words_button), Modifier.fillMaxWidth()) { showExcludedWordsDialog = true }

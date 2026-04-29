@@ -33,15 +33,14 @@ import kotlinx.serialization.json.Json
 // functionality for gesture data gathering as part of the NLNet Project https://nlnet.nl/project/GestureTyping/
 // will be removed once the project is finished
 
-// todo: add opt-in mode, where user needs to actively use the toolbar button to store cached data
-//  collect by default <-> discard by default switch
-//  description
+// todo: opt-in mode
+//  description (rest is done)
 //   no data saved except if you click the key
 //    in that case, only data from the current text field is saved (since the last text field switch)
 //   blocked words and app exclusions will still apply
-//    but all-apps are enabled? (only if no settings changed? requiring to enable multiple things is a bit much...)
-//    (maybe include all apps by default instead?)
 //   click will save data (even when not using opt-in mode)
+//  where to put description? another field in that dialog?
+//   re-read that dialog, might need updates now
 
 // todo: remove logging, it may contain sensitive data!
 object PassiveGatheringCache {
@@ -150,7 +149,7 @@ object PassiveGatheringCache {
 
     @JvmStatic
     fun flushOrClear(context: Context) {
-        if (usePassiveGathering && !context.prefs().getBoolean(GestureDataGatheringSettings.PREF_PASSIVE_SAVE_ON_BUTTON, true)) // todo: default?
+        if (usePassiveGathering && !GestureDataGatheringSettings.isOptInMode(context))
             flush(context)
         else clear()
     }

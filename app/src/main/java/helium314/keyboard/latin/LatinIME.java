@@ -1858,7 +1858,7 @@ public class LatinIME extends InputMethodService implements
             boolean usePassive = GestureDataGatheringKt.setUsePassiveGathering(this, editorInfo);
             mKeyboardSwitcher.setPassiveGatheringIndicator(usePassive, false);
             // restarting means we're still in the same field, so don't clear anything in opt-in mode
-            if (!restarting || !KtxKt.prefs(this).getBoolean(GestureDataGatheringSettings.PREF_PASSIVE_SAVE_ON_BUTTON, true)) // todo: default?
+            if (!restarting || !GestureDataGatheringSettings.INSTANCE.isOptInMode(this))
                 PassiveGatheringCache.flushOrClear(this);
         }
         GestureDataGatheringSettings.INSTANCE.showEndNotificationIfNecessary(this); // will do nothing for a long time

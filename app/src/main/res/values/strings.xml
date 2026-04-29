@@ -1104,6 +1104,10 @@ New dictionary:
     <!-- Switch text for enabling passive data gathering
      string will probably be removed once data gathering is finished (end of 2026 latest) -->
     <string name="gesture_data_passive_gathering_switch">Use passive data gathering</string>
+    <!-- Switch text for enabling opt-in mode for passive data gathering
+    todo: better text... maybe second line with explanation?
+     string will probably be removed once data gathering is finished (end of 2026 latest) -->
+    <string name="gesture_data_passive_gathering_manual_save">Save data only via toolbar key</string>
     <!-- Text showing in how many apps passive data gathering is allowed
      string will probably be removed once data gathering is finished (end of 2026 latest) -->
     <string name="gesture_data_passive_gathering_allowed_apps">Allowed apps: %s</string>
