@@ -65,6 +65,7 @@ import helium314.keyboard.settings.dialogs.ThreeButtonAlertDialog
 import kotlinx.coroutines.launch
 import kotlin.collections.plus
 import androidx.core.graphics.toColorInt
+import helium314.keyboard.keyboard.internal.keyboard_parser.floris.KeyCode
 import helium314.keyboard.latin.common.Links
 import helium314.keyboard.latin.utils.GestureDataGatheringSettings.getAppExclusions
 import helium314.keyboard.latin.utils.GestureDataGatheringSettings.getAppIncludeByDefault
@@ -104,7 +105,10 @@ fun PassiveGatheringSettings() {
             .clickable { passiveGatheringOptIn = !passiveGatheringOptIn }
             .fillMaxWidth()
     ) {
-        Text(stringResource(R.string.gesture_data_passive_gathering_manual_save))
+        Column {
+            Text(stringResource(R.string.gesture_data_passive_gathering_manual_save))
+            Text(stringResource(R.string.gesture_data_passive_gathering_manual_save_summary), style = MaterialTheme.typography.bodySmall)
+        }
         Switch(passiveGatheringOptIn, { passiveGatheringOptIn = it; GestureDataGatheringSettings.setOptInMode(ctx, it) })
     }
     ButtonWithText(stringResource(R.string.gesture_data_passive_gathering_info), Modifier.fillMaxWidth()) { showInfoDialog = true }
@@ -130,7 +134,11 @@ fun PassiveGatheringSettings() {
                                 Icon(painterResourceCompat(R.drawable.btn_keyboard_key_action_normal_lxx_base, 24), null, tint = color)
                                 Icon(painterResourceCompat(R.drawable.ring, 24), null, tint = color)
                             }
-                            Text(stringResource(R.string.gesture_data_passive_gathering_indicator_message))
+                            Text(stringResource(
+                                R.string.gesture_data_passive_gathering_indicator_message,
+                                stringResource(R.string.gesture_data_passive_gathering_control),
+                                stringResource(R.string.gesture_data_passive_gathering_manual_save),
+                            ))
                         }
                     }
                     TextButton({ controlInfo = !controlInfo }) {
@@ -139,7 +147,10 @@ fun PassiveGatheringSettings() {
                     AnimatedVisibility(controlInfo) {
                         val text = stringResource(R.string.gesture_data_passive_gathering_control_message,
                             stringResource(R.string.gesture_data_passive_apps_button),
-                            stringResource(R.string.gesture_data_passive_excluded_words_button)
+                            stringResource(R.string.gesture_data_passive_excluded_words_button),
+                            stringResource(R.string.gesture_data_passive_gathering_manual_save),
+                            stringResource(R.string.passive_gathering_save),
+                            KeyCode.PASSIVE_GATHERING_SAVE
                         )
                         Text(AnnotatedString.fromHtml(text))
                     }

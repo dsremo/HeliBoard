@@ -1104,13 +1104,15 @@ New dictionary:
     <!-- Switch text for enabling passive data gathering
      string will probably be removed once data gathering is finished (end of 2026 latest) -->
     <string name="gesture_data_passive_gathering_switch">Use passive data gathering</string>
-    <!-- Switch text for enabling opt-in mode for passive data gathering
-    todo: better text... maybe second line with explanation?
-     string will probably be removed once data gathering is finished (end of 2026 latest) -->
-    <string name="gesture_data_passive_gathering_manual_save">Save data only via toolbar key</string>
-    <!-- Text showing in how many apps passive data gathering is allowed
+    <!-- Text under the switch showing in how many apps passive data gathering is allowed
      string will probably be removed once data gathering is finished (end of 2026 latest) -->
     <string name="gesture_data_passive_gathering_allowed_apps">Allowed apps: %s</string>
+    <!-- Switch text for enabling opt-in mode for passive data gathering
+     string will probably be removed once data gathering is finished (end of 2026 latest) -->
+    <string name="gesture_data_passive_gathering_manual_save">Semi-passive mode</string>
+    <!-- Description text for enabling opt-in mode for passive data gathering
+     string will probably be removed once data gathering is finished (end of 2026 latest) -->
+    <string name="gesture_data_passive_gathering_manual_save_summary">Data is saved manually via the toolbar key</string>
     <!-- Button for opening info dialog
      string will probably be removed once data gathering is finished (end of 2026 latest) -->
     <string name="gesture_data_passive_gathering_info">More information</string>
@@ -1125,11 +1127,14 @@ New dictionary:
      string will probably be removed once data gathering is finished (end of 2026 latest) -->
     <string name="gesture_data_passive_gathering_indicator">Data gathering indicator</string>
     <!-- Message for info dialog section about passive data gathering indicator (which is displayed above the text)
+     %1$s -> gesture_data_passive_gathering_control
+     %2$s -> gesture_data_passive_gathering_manual_save
      string will probably be removed once data gathering is finished (end of 2026 latest) -->
     <string name="gesture_data_passive_gathering_indicator_message">
         Any time gesture data could potentially be saved, you will see an indicator icon on bottom left of the keyboard.
         When the circle is filled, recently entered gesture data is waiting to be saved.
-        Saving usually happens when switching text field or closing the keyboard, but may also happen on other occasions such as text field changes not under this app\'s control.
+        Data is saved either using the toolbar key (see \"%1$s\") or automatically when \"%2$s\" is disabled.
+        Automatic saving usually happens when switching text field or closing the keyboard, but may also happen on other occasions such as text field changes not under this app\'s control.
     </string>
     <!-- Title for info dialog section about controlling passive data gathering
      string will probably be removed once data gathering is finished (end of 2026 latest) -->
@@ -1137,17 +1142,26 @@ New dictionary:
     <!-- Message for info dialog section about controlling passive data gathering, parsed as HTML
      %1$s -> gesture_data_passive_apps_button
      %2$s -> gesture_data_passive_excluded_words_button
+     %3$s -> gesture_data_passive_gathering_manual_save
+     %4$s -> passive_gathering_save
+     %5$s -> the code behind KeyCode.PASSIVE_GATHERING_SAVE (-10054)
      string will probably be removed once data gathering is finished (end of 2026 latest) -->
     <string name="gesture_data_passive_gathering_control_message">
-        Independent of the setting, passive data gathering is disabled for sensitive input fields (passwords, email, or whenever the input field requests the keyboard to not learn the words).
+        Independent of the settings, passive data gathering is disabled for sensitive input fields (passwords, email, or whenever the input field requests the keyboard to not learn the words).
+
         Using &lt;i&gt;%1$s&lt;/i&gt; you can select in which apps passive data gathering may be used.
-        The default setting is to not allow any app, with opt-in per app. You can invert the default, and only exclude specific apps.
+        The default setting allows every app, with opt-out per app. You can invert the default, and only include specific apps.
         &lt;br&gt;&lt;br&gt;
 
         With &lt;i&gt;%2$s&lt;/i&gt; you can exclude specific sensitive words.
         When gesturing an excluded word, the indicator icon will still show the filled icon (\"data waiting to be saved\"), but the data will be discarded when normally it would be saved.
         When an excluded word is in the top suggestions, the gesture data will be discarded as well.
         &lt;br&gt;&lt;br&gt;
+
+        When &lt;i&gt;%3$s&lt;/i&gt; is enabled, data is saved only if you choose to do so manually.
+        You can do this either by pressing the &lt;i&gt;%4$s&lt;/i&gt; toolbar key, or using a key with code %5$s in a custom layout.
+        If data is not saved, pending data will be deleted when changing input field, closing the keyboard, or when using the toolbar key described below.&lt;br&gt;
+        App and word exclusions still apply in this mode.
 
         If you want to stop pending data from being saved, you can enable incognito mode or disable data gathering using the toolbar keys.&lt;br&gt;
         For disabling data gathering you will get a new toolbar key if you enabled passive data gathering at least once.
