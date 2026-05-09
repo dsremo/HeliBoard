@@ -762,7 +762,6 @@ public class LatinIME extends InputMethodService implements
     }
 
     public void updateSuggestionStripView(View view) {
-        Log.i("test", "update ss view");
         mSuggestionStripView = mSettings.getCurrent().mToolbarMode == ToolbarMode.HIDDEN || isEmojiSearch()?
                         null : view.findViewById(R.id.suggestion_strip_view);
         if (hasSuggestionStripView()) {
@@ -864,8 +863,7 @@ public class LatinIME extends InputMethodService implements
         boolean inputTypeChanged = !currentSettingsValues.isSameInputType(editorInfo);
         boolean isDifferentTextField = !restarting || inputTypeChanged;
 
-        // we need to reload the setting before using them, e.g. in startInput or in postResumeSuggestions
-        // we want to arrive here before calling updateKeyboardTheme, because this reads SettingsValues.mToolbarMode
+        // we want to reload the settings before calling updateKeyboardTheme, because updateKeyboardTheme reads SettingsValues.mToolbarMode
         if (isDifferentTextField || !currentSettingsValues.hasSameOrientation(getResources().getConfiguration())) {
             loadSettings();
             if (hasSuggestionStripView())
