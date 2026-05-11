@@ -245,7 +245,7 @@ class WordData(
             }
         )
         val filteredSuggestions = mutableListOf<SuggestedWords.SuggestedWordInfo>()
-        for (word in suggestions) { // suggestions are sorted with highest score first
+        for (word in suggestions.sortedByDescending { it.mOriginalScore }) {
             if (word.mWord == targetWord) {
                 // always add the targetWord if we have it
                 filteredSuggestions.add(word)
@@ -255,7 +255,7 @@ class WordData(
                 || suggestions.any { it.mWord == word.mWord && it.mSourceDict.mDictType == Dictionary.TYPE_CONTACTS })
                 continue // never store contacts (might be in user history too)
             // for the personal dictionary we rely on the ignore list
-            if (word.mScore < 0 && filteredSuggestions.size > 5)
+            if (word.mOriginalScore < 0 && filteredSuggestions.size > 5)
                 continue // no need to add bad matches
             if (filteredSuggestions.any { it.mWord == word.mWord })
                 continue // only first occurrence word, todo: ask whether this is ok!
@@ -281,7 +281,7 @@ class WordData(
                 val hash = (dict as? BinaryDictionary)?.hash ?: (dict as? ReadOnlyBinaryDictionary)?.hash
                 DictInfo(hash, dict.mDictType, dict.mLocale?.toLanguageTag())
             },
-            filteredSuggestions.map { Suggestion(it.mWord, it.mScore, dictionariesInUsedSuggestions[it.mSourceDict]) },
+            filteredSuggestions.map { Suggestion(it.mWord, it.mOriginalScore, dictionariesInUsedSuggestions[it.mSourceDict]) },
             PointerData.fromPointers(composedData.mInputPointers),
             keyboardInfo,
             activeMode,
