@@ -233,6 +233,11 @@ class WordData(
                 )
             }
         )
+        if (!activeMode && targetWord != null && suggestions.none { it.mWord == targetWord }) {
+            // change target word to the first case insensitive match if there is no case sensitive match
+            val match = suggestions.firstOrNull { it.mWord.equals(targetWord, true) }
+            if (match != null) targetWord = match.mWord
+        }
         val filteredSuggestions = mutableListOf<SuggestedWords.SuggestedWordInfo>()
         for (word in suggestions.sortedByDescending { it.mOriginalScore }) {
             if (word.mWord == targetWord) {
@@ -298,8 +303,7 @@ class WordData(
             return false // probably some more inputAttributes to consider
         if (suggestions.firstOrNull()?.mSourceDict?.mDictType == Dictionary.TYPE_CONTACTS)
             return false
-        // todo: case insensitive match? or change target word?
-        val matchingSuggestions = suggestions.filter { it.mWord == (targetWord ?: usedWord) }
+        val matchingSuggestions = suggestions.filter { it.mWord.equals(targetWord ?: usedWord, true) }
         if (matchingSuggestions.all { (it.mKindAndFlags and 0xFF) == KIND_SHORTCUT })
             return false // we want at least one non-shortcut
         val ignoreWords = GestureDataGatheringSettings.getWordExclusions(context)
