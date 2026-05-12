@@ -296,13 +296,13 @@ fun PassiveGatheringSettings() {
                     value = newWord,
                     onValueChange = { newWord = it },
                     modifier = Modifier.weight(1f),
-                    isError = error,
+                    isError = error && newWord.text.isNotEmpty(),
                     singleLine = true,
                     label = { Text(stringResource(R.string.user_dict_add_word_button)) },
                     keyboardActions = KeyboardActions { addWord() }
                 )
                 IconButton(
-                    { addWord() },
+                    { if (!error) addWord() },
                     Modifier.weight(0.2f)
                 ) {
                     val tint = if (error) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onSurface
@@ -313,7 +313,7 @@ fun PassiveGatheringSettings() {
                 LocalTextStyle provides MaterialTheme.typography.bodyLarge
             ) {
                 Column(Modifier.verticalScroll(scroll)) {
-                    ignoreWords.map { word ->
+                    ignoreWords.forEach { word ->
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween,
