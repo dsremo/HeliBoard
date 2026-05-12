@@ -599,6 +599,7 @@ public final class KeyboardSwitcher implements KeyboardState.SwitchActions {
     }
 
     public void setPassiveGatheringIndicator(boolean enabled, boolean hasData) {
+        if (mCurrentInputView == null) return;
         ImageView view = mCurrentInputView.findViewById(R.id.passiveGatheringIndicator);
         view.setVisibility(enabled ? View.VISIBLE: View.GONE);
         view.setImageResource(hasData ? R.drawable.btn_keyboard_key_action_normal_lxx_base : R.drawable.ring);
