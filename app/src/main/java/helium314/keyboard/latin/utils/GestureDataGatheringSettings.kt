@@ -3,6 +3,7 @@ package helium314.keyboard.latin.utils
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.SystemClock
 import android.view.inputmethod.EditorInfo
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,7 +41,7 @@ object GestureDataGatheringSettings {
     private const val PREF_PASSIVE_NOTIFY_COUNT = "gesture_data_passive_notify_count"
     const val PREF_PASSIVE_ENABLED = "gesture_data_passive_gathering_enabled"
     private const val PREF_PASSIVE_SAVE_ON_BUTTON = "gesture_data_passive_gathering_save_on_button"
-    const val PREF_PASSIVE_DISABLED_BEFORE = "gesture_data_passive_gathering_disabled_before"
+    const val PREF_PASSIVE_DISABLED_BEFORE_TIME_MILLIS = "gesture_data_passive_gathering_disabled_before"
     private const val PREF_END_NOTIFICATION_LAST_SHOWN = "gesture_data_end_notification_shown"
     private const val PREF_SHOW_PROMOTION_DIALOG_NEXT = "gesture_data_show_promotion_dialog_next_time"
     private const val PREF_SHOW_REMINDER_DIALOG_NEXT = "gesture_data_show_reminder_dialog_next_time"
@@ -49,13 +50,20 @@ object GestureDataGatheringSettings {
     fun isInActiveGatheringMode(editorInfo: EditorInfo) =
         dictTestImeOption == editorInfo.privateImeOptions && gestureDataActiveFacilitator != null
 
-    fun isPassiveGatheringEnabled(prefs: SharedPreferences) =
-        prefs.getBoolean(PREF_PASSIVE_ENABLED, false)
-            && System.currentTimeMillis() > prefs.getLong(PREF_PASSIVE_DISABLED_BEFORE, 0L)
+    fun isPassiveGatheringEnabled(prefs: SharedPreferences): Boolean {
+        if (!prefs.getBoolean(PREF_PASSIVE_ENABLED, false)) return false
+        val disabledBefore = prefs.getLong(PREF_PASSIVE_DISABLED_BEFORE_TIME_MILLIS, 0L)
+        if (disabledBefore > SystemClock.elapsedRealtime() + 5 * 60 * 1000L) {
+            // elapsedRealtime decreased -> phone was rebooted -> reset
+            prefs.edit { remove(PREF_PASSIVE_DISABLED_BEFORE_TIME_MILLIS) }
+            return true
+        }
+        return SystemClock.elapsedRealtime() > disabledBefore
+    }
 
     fun setPassiveGatheringEnabled(prefs: SharedPreferences, enabled: Boolean) = prefs.edit {
         putBoolean(PREF_PASSIVE_ENABLED, enabled)
-        remove(PREF_PASSIVE_DISABLED_BEFORE)
+        remove(PREF_PASSIVE_DISABLED_BEFORE_TIME_MILLIS)
     }
 
     fun togglePassiveGatheringEnabled(prefs: SharedPreferences) =
@@ -63,7 +71,7 @@ object GestureDataGatheringSettings {
 
     fun tempDisablePassiveGathering(prefs: SharedPreferences) {
         // disable for 5 min
-        prefs.edit { putLong(PREF_PASSIVE_DISABLED_BEFORE, System.currentTimeMillis() + 5 * 60 * 1000L) }
+        prefs.edit { putLong(PREF_PASSIVE_DISABLED_BEFORE_TIME_MILLIS, SystemClock.elapsedRealtime() + 5 * 60 * 1000L) }
     }
 
     fun String.filterPassiveGatheringToolbarKeys(prefs: SharedPreferences) = split(Separators.ENTRY).filter {

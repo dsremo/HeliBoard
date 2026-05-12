@@ -33,15 +33,6 @@ import kotlinx.serialization.json.Json
 // functionality for gesture data gathering as part of the NLNet Project https://nlnet.nl/project/GestureTyping/
 // will be removed once the project is finished
 
-// todo: opt-in mode
-//  description (rest is done)
-//   no data saved except if you click the key
-//    in that case, only data from the current text field is saved (since the last text field switch)
-//   blocked words and app exclusions will still apply
-//   click will save data (even when not using opt-in mode)
-//  where to put description? another field in that dialog?
-//   re-read that dialog, might need updates now
-
 // todo: remove logging, it may contain sensitive data!
 object PassiveGatheringCache {
     private val cachedWords = mutableListOf<WordData>()
@@ -49,7 +40,7 @@ object PassiveGatheringCache {
     private val scope = CoroutineScope(Dispatchers.IO)
 
     private fun updateIcon() {
-        scope.launch(Dispatchers.Main) { // on main thread to avoid exception
+        scope.launch(Dispatchers.Main) { // on main thread because it's touching views
             KeyboardSwitcher.getInstance().setPassiveGatheringIndicator(usePassiveGathering, cachedWords.isNotEmpty())
         }
     }
@@ -61,11 +52,12 @@ object PassiveGatheringCache {
         }
         Log.i(TAG, "adding ${word.usedWord}")
         // we cache the word before checking whether it can be saved because we don't have context
+        // todo: actually we could just use Settings.getCurrentContext -> would provide better feedback to users!
         cachedWords.add(word)
         updateIcon()
     }
 
-    // currently only used when entering inline emoji search
+    // only used when entering inline emoji search, because in this case the word is added before the internalAction is set
     fun removeLast(word: String) {
         if (cachedWords.last().usedWord != word) return
         Log.i(TAG, "removing $word")
@@ -74,17 +66,11 @@ object PassiveGatheringCache {
     }
 
     fun onPickSuggestionAfterGesturing(suggestion: SuggestedWords.SuggestedWordInfo, originalWord: String) {
-        // replace the latest entry in cache, or is there any chance we come here other than right after gesture typing?
-        // anyway, use originalWord to make sure we're replacing the right thing
+        // replace the latest entry in cache, but do a sanity check
         Log.i(TAG, "picked ${suggestion.word} instead of $originalWord after gesturing")
         val lastEntry = cachedWords.lastOrNull()
-        if (lastEntry == null) {
-            Log.w(TAG, "...but cache is empty")
-            return
-        }
-        if (lastEntry.usedWord != originalWord) {
-            // may happen when we skip something in addWord
-            Log.w(TAG, "...but our last word is ${lastEntry.usedWord}, not $originalWord")
+        if (lastEntry?.usedWord != originalWord) {
+            Log.w(TAG, "...but our last word is ${lastEntry?.usedWord}, not $originalWord")
             return
         }
         lastEntry.usedWord = suggestion.mWord
@@ -93,7 +79,7 @@ object PassiveGatheringCache {
 
     fun onPickSuggestion(suggestion: SuggestedWords.SuggestedWordInfo, originalWord: String) {
         Log.i(TAG, "picked ${suggestion.word} instead of $originalWord")
-        // this happen after tap-typing (new word or corrected gesture word), or when moving the cursor and then selecting a different suggestion
+        // this happens after tap-typing (new word or corrected gesture word), or when moving the cursor and then selecting a different suggestion
         // don't update anything if we have the word more than once
         val word = cachedWords.singleOrNull { it.usedWord == originalWord } ?: return
         word.usedWord = suggestion.mWord
@@ -151,20 +137,21 @@ object PassiveGatheringCache {
     }
 
     @JvmStatic
-    fun flushOrClear(context: Context) {
+    fun saveOrClear(context: Context) {
         if (usePassiveGathering && !GestureDataGatheringSettings.isOptInMode(context))
-            flush(context)
+            save(context)
         else clear()
     }
 
-    fun flush(context: Context) {
+    fun save(context: Context) {
         // save all words and clear cache
         val words = cachedWords.toList()
-        Log.i(TAG, "flush cache")
+        Log.i(TAG, "save cached data")
         cachedWords.clear()
         // todo: if anything was saved, we could shortly change the icon to green or so
         //  but actual saving happens later...
         //  maybe save should return a bool?
+        //  or assume we save if the cache isn't empty (this needs to do the isSavingOk check already on add)
         updateIcon()
         scope.launch { words.forEach { it.save(context) } }
     }
@@ -192,7 +179,8 @@ private fun isPassiveGatheringUsed(context: Context, editorInfo: EditorInfo): Bo
     if (!GestureDataGatheringSettings.isPassiveGatheringEnabled(context.prefs())) return false
     if (Settings.getValues().mIncognitoModeEnabled) return false
     val inputAttributes = InputAttributes(editorInfo, false, "")
-    if (inputAttributes.mInputType and InputType.TYPE_CLASS_TEXT == 0) return false // undefined (e.g. terminal apps) type could work, but may not allow to track corrections
+    if (inputAttributes.mInputType and InputType.TYPE_CLASS_TEXT == 0)
+        return false // undefined (e.g. terminal apps) type should work, but will likely not allow to track corrections
     val isEmailField = InputTypeUtils.isEmailVariation(inputAttributes.mInputType and InputType.TYPE_MASK_VARIATION)
     if (inputAttributes.mIsPasswordField || inputAttributes.mNoLearning || isEmailField) return false
     if (GestureDataGatheringSettings.isForbiddenForDataGathering(editorInfo.packageName, context)) return false
@@ -305,13 +293,14 @@ class WordData(
         if (!activeMode && !GestureDataGatheringSettings.isPassiveGatheringEnabled(context.prefs()))
             return false
         if (!activeMode && GestureDataGatheringSettings.isForbiddenForDataGathering(packageName, context))
-            return false // package ignored (we should never come here in this case, but better be safe)
+            return false // package ignored (we should never come here for blocked apps, but better be safe)
         val inputAttributes = InputAttributes(keyboard.mId.mEditorInfo, false, "")
         val isEmailField = InputTypeUtils.isEmailVariation(inputAttributes.mInputType and InputType.TYPE_MASK_VARIATION)
         if (inputAttributes.mIsPasswordField || inputAttributes.mNoLearning || isEmailField)
             return false // probably some more inputAttributes to consider
         if (suggestions.firstOrNull()?.mSourceDict?.mDictType == Dictionary.TYPE_CONTACTS)
             return false
+        // todo: case insensitive match? or change target word?
         val matchingSuggestions = suggestions.filter { it.mWord == (targetWord ?: usedWord) }
         if (matchingSuggestions.all { (it.mKindAndFlags and 0xFF) == KIND_SHORTCUT })
             return false // we want at least one non-shortcut

@@ -1861,7 +1861,7 @@ public class LatinIME extends InputMethodService implements
             mKeyboardSwitcher.setPassiveGatheringIndicator(usePassive, false);
             // restarting means we're still in the same field, so don't clear anything in opt-in mode
             if (!restarting || !GestureDataGatheringSettings.INSTANCE.isOptInMode(this))
-                PassiveGatheringCache.flushOrClear(this);
+                PassiveGatheringCache.saveOrClear(this);
         }
         GestureDataGatheringSettings.INSTANCE.showEndNotificationIfNecessary(this); // will do nothing for a long time
         mInputLogic.setFacilitator(mDictionaryFacilitator);

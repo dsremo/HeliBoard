@@ -210,7 +210,7 @@ public final class InputLogic {
      * Clean up the input logic after input is finished.
      */
     public void finishInput() {
-        PassiveGatheringCache.flushOrClear(mLatinIME);
+        PassiveGatheringCache.saveOrClear(mLatinIME);
         if (mWordComposer.isComposingWord()) {
             mConnection.finishComposingText();
             StatsUtils.onWordCommitUserTyped(mWordComposer.getTypedWord(), mWordComposer.isBatchMode());
@@ -380,9 +380,9 @@ public final class InputLogic {
             return false;
         }
 
-        // if all text is gone, we treat it like onStartInput and flush the passive data gathering cache
+        // if all text is gone, we treat it like onStartInput
         if (GestureDataGatheringKt.usePassiveGathering && newSelStart == 0 && newSelEnd == 0 && !mConnection.hasTextAfterCursor())
-            PassiveGatheringCache.flushOrClear(mLatinIME);
+            PassiveGatheringCache.saveOrClear(mLatinIME);
 
         // TODO: the following is probably better done in resetEntireInputState().
         // it should only happen when the cursor moved, and the very purpose of the
@@ -1304,9 +1304,8 @@ public final class InputLogic {
         if (mWordComposer.isComposingWord()) {
             if (mWordComposer.isBatchMode()) {
                 final String rejectedSuggestion = mWordComposer.getTypedWord();
-                if (GestureDataGatheringKt.usePassiveGathering) {
+                if (GestureDataGatheringKt.usePassiveGathering)
                     PassiveGatheringCache.INSTANCE.onRejectedSuggestion(rejectedSuggestion);
-                }
                 mWordComposer.reset();
                 mWordComposer.setRejectedBatchModeSuggestion(rejectedSuggestion);
                 if (!TextUtils.isEmpty(rejectedSuggestion)) {
@@ -2684,7 +2683,8 @@ public final class InputLogic {
         if (isStartOfInlineEmojiSearch(codePoint, mConnection.getCodePointBeforeCursor(), mConnection.getCharBeforeBeforeCursor(),
                                        settingsValues)) {
             if (mWordComposer.isBatchMode())
-                // when entering inline emoji search with glide typing, the action is not set when the word is added, so we need to remove it
+                // when entering inline emoji search with glide typing, the action is not set when the word is added
+                // this means we don't detect inline search mode, so we remove to word now
                 PassiveGatheringCache.INSTANCE.removeLast(mWordComposer.getTypedWord());
             setInlineEmojiSearchAction(true);
         }

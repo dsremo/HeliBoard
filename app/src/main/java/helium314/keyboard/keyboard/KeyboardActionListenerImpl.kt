@@ -104,23 +104,23 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
             KeyCode.TOGGLE_AUTOCORRECT -> return settings.toggleAutoCorrect()
             KeyCode.TOGGLE_PASSIVE_GATHERING -> {
                 GestureDataGatheringSettings.togglePassiveGatheringEnabled(latinIME.prefs())
-                PassiveGatheringCache.clear() // clear data from current text field
+                PassiveGatheringCache.clear()
                 latinIME.setGestureDataGatheringMode(latinIME.currentInputEditorInfo, false)
                 return
             }
             KeyCode.PASSIVE_GATHERING_TEMP_OFF -> {
                 GestureDataGatheringSettings.tempDisablePassiveGathering(latinIME.prefs())
-                PassiveGatheringCache.clear() // clear data from current text field
+                PassiveGatheringCache.clear()
                 latinIME.setGestureDataGatheringMode(latinIME.currentInputEditorInfo, false)
                 return
             }
             KeyCode.PASSIVE_GATHERING_SAVE -> {
-                PassiveGatheringCache.flush(latinIME)
+                PassiveGatheringCache.save(latinIME)
                 return
             }
             KeyCode.TOGGLE_INCOGNITO_MODE -> {
                 settings.toggleAlwaysIncognitoMode()
-                PassiveGatheringCache.clear() // clear data from current text field
+                PassiveGatheringCache.clear()
                 latinIME.setGestureDataGatheringMode(latinIME.currentInputEditorInfo, false)
                 return
             }

@@ -130,7 +130,7 @@ fun PassiveGatheringSettings() {
                         Text(stringResource(R.string.gesture_data_passive_gathering_indicator))
                     }
                     AnimatedVisibility(indicatorInfo) {
-                        val color = Color("#a00000".toColorInt())
+                        val color = Color("#a00000".toColorInt()) // same as in input_view.xml
                         Column {
                             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                                 Icon(painterResourceCompat(R.drawable.btn_keyboard_key_action_normal_lxx_base, 24), null, tint = color)
