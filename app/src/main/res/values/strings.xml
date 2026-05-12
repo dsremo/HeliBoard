@@ -1134,14 +1134,14 @@ New dictionary:
     <!-- Title for info dialog section about passive data gathering indicator
      string will probably be removed once data gathering is finished (end of 2026 latest) -->
     <string name="gesture_data_passive_gathering_indicator">Data gathering indicator</string>
-    <!-- Message for info dialog section about passive data gathering indicator (which is displayed above the text)
+    <!-- Message for info dialog section about passive data gathering indicator (which is displayed above the text), parsed as HTML
      %1$s -> gesture_data_passive_gathering_control
      %2$s -> gesture_data_passive_gathering_manual_save
      string will probably be removed once data gathering is finished (end of 2026 latest) -->
     <string name="gesture_data_passive_gathering_indicator_message">
-        Any time gesture data could potentially be saved, you will see an indicator icon on bottom left of the keyboard.
+        Any time gesture data may be recorded, you will see an indicator icon on bottom left of the keyboard.
         When the circle is filled, recently entered gesture data is waiting to be saved.
-        Data is saved either using the toolbar key (see \"%1$s\") or automatically when \"%2$s\" is disabled.
+        Data is saved either using the toolbar key (see &lt;i&gt;%1$s&lt;/i&gt;) or automatically (when &lt;i&gt;%2$s&lt;/i&gt; is disabled).
         Automatic saving usually happens when switching text field or closing the keyboard, but may also happen on other occasions such as text field changes not under this app\'s control.
     </string>
     <!-- Title for info dialog section about controlling passive data gathering
@@ -1152,7 +1152,6 @@ New dictionary:
      %2$s -> gesture_data_passive_excluded_words_button
      %3$s -> gesture_data_passive_gathering_manual_save
      %4$s -> passive_gathering_save
-     %5$s -> the code behind KeyCode.PASSIVE_GATHERING_SAVE (-10054)
      string will probably be removed once data gathering is finished (end of 2026 latest) -->
     <string name="gesture_data_passive_gathering_control_message">
         Independent of the settings, passive data gathering is disabled for sensitive input fields (passwords, email, or whenever the input field requests the keyboard to not learn the words).
@@ -1167,14 +1166,15 @@ New dictionary:
         &lt;br&gt;&lt;br&gt;
 
         When &lt;i&gt;%3$s&lt;/i&gt; is enabled, data is saved only if you choose to do so manually.
-        You can do this either by pressing the &lt;i&gt;%4$s&lt;/i&gt; toolbar key, or using a key with code %5$s in a custom layout.
+        You can do this either by pressing the &lt;i&gt;%4$s&lt;/i&gt; toolbar key, or using a key with code -10054 in a custom layout.
         If data is not saved, pending data will be deleted when changing input field, closing the keyboard, or when using the toolbar key described below.&lt;br&gt;
         App and word exclusions still apply in this mode.
+        &lt;br&gt;&lt;br&gt;
 
-        If you want to stop pending data from being saved, you can enable incognito mode or disable data gathering using the toolbar keys.&lt;br&gt;
-        For disabling data gathering you will get a new toolbar key if you enabled passive data gathering at least once.
-        A simple press on the key toggles passive gathering, and long-press disables it for five minutes.
-        When the time is over, data gathering will be enabled again if it was enabled before,
+        If you want to stop pending data from being saved, you can enable incognito mode or disable data gathering using the toolbar key.&lt;br&gt;
+        This toolbar key will show up only if you enabled passive data gathering at least once.
+        A simple press on the key toggles passive gathering (key code -10052), and long-press disables it for five minutes (key code -10053).
+        After the five minutes, data gathering will be enabled again if it was enabled before.
         You can re-enable passive data gathering earlier using the toolbar key.
     </string>
     <!-- Message for info dialog section about reviewing and sharing passively gathered data, parsed as HTML
@@ -1182,8 +1182,8 @@ New dictionary:
      %2$s -> https://codeberg.org/eclexic/swipe-o-scope
      string will probably be removed once data gathering is finished (end of 2026 latest) -->
     <string name="gesture_data_passive_gathering_review_message">
-        Using &lt;i&gt;%1$s&lt;/i&gt; you can check and filter the gathered data, delete data if you consider it too sensitive, and share data.
-        The delete and share buttons will work on the currently displayed data, or on the selection if you used long-press to select words.
+        Using &lt;i&gt;%1$s&lt;/i&gt; you can check and filter the gathered data, delete data you consider too sensitive, and share data.
+        The delete and share buttons will operate on the filtered data, or on the selection if you use long-press to select words.
         (Note that the \"normal\" share icon at the bottom will only share data from active gathering.)&lt;br&gt;
         If you want to view the full data that is stored for a gesture, you can share it to a file, and load the file in &lt;a href=%2$s&gt;Swipe-O-Scope&lt;a&gt;.
     </string>

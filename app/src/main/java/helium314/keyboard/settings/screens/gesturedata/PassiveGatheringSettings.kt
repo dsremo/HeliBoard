@@ -132,15 +132,16 @@ fun PassiveGatheringSettings() {
                     AnimatedVisibility(indicatorInfo) {
                         val color = Color("#a00000".toColorInt())
                         Column {
-                            Row {
+                            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                                 Icon(painterResourceCompat(R.drawable.btn_keyboard_key_action_normal_lxx_base, 24), null, tint = color)
                                 Icon(painterResourceCompat(R.drawable.ring, 24), null, tint = color)
                             }
-                            Text(stringResource(
+                            val text = stringResource(
                                 R.string.gesture_data_passive_gathering_indicator_message,
                                 stringResource(R.string.gesture_data_passive_gathering_control),
                                 stringResource(R.string.gesture_data_passive_gathering_manual_save),
-                            ))
+                            )
+                            Text(AnnotatedString.fromHtml(text))
                         }
                     }
                     TextButton({ controlInfo = !controlInfo }) {
@@ -152,7 +153,6 @@ fun PassiveGatheringSettings() {
                             stringResource(R.string.gesture_data_passive_excluded_words_button),
                             stringResource(R.string.gesture_data_passive_gathering_manual_save),
                             stringResource(R.string.passive_gathering_save),
-                            KeyCode.PASSIVE_GATHERING_SAVE
                         )
                         Text(AnnotatedString.fromHtml(text))
                     }
