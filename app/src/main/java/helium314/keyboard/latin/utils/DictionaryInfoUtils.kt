@@ -10,6 +10,7 @@ import android.text.TextUtils
 import com.android.inputmethod.latin.utils.BinaryDictionaryUtils
 import helium314.keyboard.latin.dictionary.Dictionary
 import helium314.keyboard.latin.common.FileUtils
+import helium314.keyboard.latin.common.LocaleUtils
 import helium314.keyboard.latin.common.LocaleUtils.constructLocale
 import helium314.keyboard.latin.common.loopOverCodePoints
 import helium314.keyboard.latin.define.DecoderSpecificConstants
@@ -103,14 +104,43 @@ object DictionaryInfoUtils {
         return absoluteDirectoryName
     }
 
+    @Volatile private var emojiDictLocales: List<Locale>? = null
+
     @JvmStatic
-    fun getLocalesWithEmojiDicts(context: Context): List<Locale> =
-        SubtypeSettings.getEnabledSubtypes(true)
-            .map { it.locale() }.filter { getCachedDictForLocaleAndType(it, Dictionary.TYPE_EMOJI, context) != null }
+    fun clearEmojiDictLocaleCache() {
+        emojiDictLocales = null
+    }
+
+    @JvmStatic
+    fun getLocalesWithEmojiDicts(context: Context): List<Locale> {
+        emojiDictLocales?.let { return it }
+        val found = SubtypeSettings.getEnabledSubtypes(true)
+            .map { it.locale() }.filter { hasDictForLocaleAndType(it, Dictionary.TYPE_EMOJI, context) }
+        emojiDictLocales = found
+        return found
+    }
+
+    @JvmStatic
+    fun hasDictForLocaleAndType(locale: Locale, type: String, context: Context): Boolean =
+        getCachedDictForLocaleAndType(locale, type, context) != null
+            || findAssetsDictForLocaleAndType(locale, type, context) != null
+
+    private fun findAssetsDictForLocaleAndType(locale: Locale, type: String, context: Context): String? {
+        val candidates = getAssetsDictionaryList(context)?.filter { it.substringBefore("_") == type }
+        if (candidates.isNullOrEmpty()) return null
+        return LocaleUtils.getBestMatch(locale, candidates) { extractLocaleFromAssetsDictionaryFile(it) }
+    }
+
+    @JvmStatic
+    fun getOrExtractDictForLocaleAndType(locale: Locale, type: String, context: Context): File? {
+        getCachedDictForLocaleAndType(locale, type, context)?.let { return it }
+        val assetName = findAssetsDictForLocaleAndType(locale, type, context) ?: return null
+        return extractAssetsDictionary(assetName, locale, context)
+    }
 
     @JvmStatic
     fun getCachedDictForLocaleAndType(locale: Locale, type: String, context: Context): File? =
-        getCachedDictsForLocale(locale, context).firstOrNull { it.name.substringBefore("_") == type }
+        getCachedDictsForLocale(locale, context).firstOrNull { it.name.substringBefore("_").substringBefore(".") == type }
 
     fun getCachedDictsForLocale(locale: Locale, context: Context) =
         getCacheDirectoryForLocale(locale, context)?.let { File(it).listFiles() }.orEmpty()
@@ -139,6 +169,7 @@ object DictionaryInfoUtils {
 
     // actually we could extract assets dicts to unprotected storage
     fun extractAssetsDictionary(dictionaryFileName: String, locale: Locale, context: Context): File? {
+        clearEmojiDictLocaleCache()
         val cacheDir = getCacheDirectoryForLocale(locale, context) ?: return null
         val targetFile = File(cacheDir, "${dictionaryFileName.substringBefore("_")}.dict")
         try {
@@ -153,8 +184,14 @@ object DictionaryInfoUtils {
         return targetFile
     }
 
-    fun getAssetsDictionaryList(context: Context): Array<String>? =
-        runCatching { context.assets.list(ASSETS_DICTIONARY_FOLDER) }.getOrNull()
+    @Volatile private var assetsDictionaryList: Array<String>? = null
+
+    fun getAssetsDictionaryList(context: Context): Array<String>? {
+        assetsDictionaryList?.let { return it }
+        val listed = runCatching { context.assets.list(ASSETS_DICTIONARY_FOLDER) }.getOrNull()
+        if (listed != null) assetsDictionaryList = listed
+        return listed
+    }
 
     @JvmStatic
     fun looksValidForDictionaryInsertion(text: CharSequence, spacingAndPunctuations: SpacingAndPunctuations): Boolean {

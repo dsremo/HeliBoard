@@ -159,7 +159,7 @@ class LocaleKeyboardInfos(dataStream: InputStream?, locale: Locale) {
 
     fun addLocaleTlds(locale: Locale) {
         tlds.add(0, comTld)
-        val ccLower = locale.country.lowercase()
+        val ccLower = locale.country.lowercase(java.util.Locale.ROOT)
         if (ccLower.isNotEmpty() && locale.language != SubtypeLocaleUtils.NO_LANGUAGE) {
             specialCountryTlds[ccLower]?.let { tlds.addAll(SpacedTokens(it)) } ?: tlds.add(".$ccLower")
         }

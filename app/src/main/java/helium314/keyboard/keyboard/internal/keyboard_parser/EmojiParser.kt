@@ -23,6 +23,13 @@ import kotlin.math.sqrt
 class EmojiParser(private val params: KeyboardParams, private val context: Context) {
 
     fun parse(): ArrayList<ArrayList<KeyParams>> {
+        if (params.mId.element == KeyboardElement.EMOJI_ALL) {
+            loadEmojiDefaultVersionsAndPopupSpecs(context, loadEmojiFile("PEOPLE_AND_BODY.txt", context))
+            val combinedLines = ALL_EMOJI_FILES.flatMap { fileName -> loadEmojiFile(fileName, context) }
+            return parseEmojis(
+                combinedLines.map { line -> getEmojiDefaultVersion(line.splitOnWhitespace().first()) }
+            )
+        }
         val emojiFileName = getEmojiFileName(params.mId.element)
         val emojiLines = if (emojiFileName == null) {
             listOf( // special template keys for recents category
@@ -128,6 +135,18 @@ private fun loadEmojiDefaultVersionsAndPopupSpecs(context: Context, category2Emo
             .takeIf { it.isNotEmpty() }?.joinToString(",")?.let { emojiPopupSpecs[split.first()] = it }
     }
 }
+
+private val ALL_EMOJI_FILES = listOf(
+    "SMILEYS_AND_EMOTION.txt",
+    "PEOPLE_AND_BODY.txt",
+    "ANIMALS_AND_NATURE.txt",
+    "FOOD_AND_DRINK.txt",
+    "TRAVEL_AND_PLACES.txt",
+    "ACTIVITIES.txt",
+    "OBJECTS.txt",
+    "SYMBOLS.txt",
+    "FLAGS.txt",
+)
 
 private fun getEmojiFileName(category: KeyboardElement) = when (category) {
     KeyboardElement.EMOJI_SMILEYS -> "SMILEYS_AND_EMOTION.txt"

@@ -38,7 +38,11 @@ import kotlin.math.min
 class Suggest(private val mDictionaryFacilitator: DictionaryFacilitator) {
     private var mAutoCorrectionThreshold = 0f
     private val mPlausibilityThreshold = 0f
-    private val nextWordSuggestionsCache = HashMap<NgramContext, SuggestionResults>()
+    private val nextWordSuggestionsCache = object : java.util.LinkedHashMap<NgramContext, SuggestionResults>(64, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<NgramContext, SuggestionResults>?): Boolean {
+            return size > 256
+        }
+    }
 
     // cache cleared whenever LatinIME.loadSettings is called, notably on changing layout and switching input fields
     fun clearNextWordSuggestionsCache() = nextWordSuggestionsCache.clear()

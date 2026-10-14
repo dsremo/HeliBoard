@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import helium314.keyboard.latin.BuildConfig
 import helium314.keyboard.latin.R
 import helium314.keyboard.latin.utils.JniUtils
 import helium314.keyboard.latin.utils.SubtypeLocaleUtils.displayName
@@ -37,6 +38,7 @@ fun MainSettingsScreen(
     onClickToolbar: () -> Unit,
     onClickGestureTyping: () -> Unit,
     onClickDataGathering: () -> Unit,
+    onClickHandwriting: () -> Unit,
     onClickAdvanced: () -> Unit,
     onClickAppearance: () -> Unit,
     onClickLanguage: () -> Unit,
@@ -44,9 +46,14 @@ fun MainSettingsScreen(
     onClickDictionaries: () -> Unit,
     onClickBack: () -> Unit,
 ) {
+    val variantSuffix = when (BuildConfig.BUILD_TYPE) {
+        "release" -> ""
+        "debug" -> " (debug)"
+        else -> " (${BuildConfig.BUILD_TYPE})"
+    }
     SearchSettingsScreen(
         onClickBack = onClickBack,
-        title = stringResource(R.string.ime_settings),
+        title = stringResource(R.string.ime_settings) + variantSuffix,
         settings = emptyList(),
     ) {
         val enabledSubtypes = SubtypeSettings.getEnabledSubtypes(true)
@@ -86,8 +93,13 @@ fun MainSettingsScreen(
                     Preference(
                         name = stringResource(R.string.gesture_data_screen),
                         onClick = onClickDataGathering,
-                        icon = R.drawable.ic_settings_gesture
+                        icon = R.drawable.ic_settings_gesture_data
                     ) { NextScreenIcon() }
+                Preference(
+                    name = stringResource(R.string.settings_screen_handwriting),
+                    onClick = onClickHandwriting,
+                    icon = R.drawable.ic_handwrite
+                ) { NextScreenIcon() }
                 Preference(
                     name = stringResource(R.string.settings_screen_correction),
                     onClick = onClickTextCorrection,
@@ -124,7 +136,7 @@ private fun PreviewScreen() {
     initPreview(LocalContext.current)
     Theme(previewDark) {
         Surface {
-            MainSettingsScreen({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})
+            MainSettingsScreen({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})
         }
     }
 }

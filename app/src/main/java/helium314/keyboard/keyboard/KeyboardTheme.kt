@@ -401,7 +401,7 @@ private constructor(val themeId: Int, @JvmField val mStyleId: Int) {
             val colorMap = EnumMap<ColorType, Int>(ColorType::class.java)
             colorsString.split(";").forEach {
                 val ct = try {
-                    ColorType.valueOf(it.substringBefore(",").uppercase())
+                    ColorType.valueOf(it.substringBefore(",").uppercase(java.util.Locale.ROOT))
                 } catch (_: IllegalArgumentException) {
                     return@forEach
                 }

@@ -34,7 +34,7 @@ import kotlinx.serialization.json.Json
 // will be removed once the project is finished
 
 object BackgroundGatheringCache {
-    private val cachedWords = mutableListOf<WordData>()
+    private val cachedWords = java.util.Collections.synchronizedList(mutableListOf<WordData>())
     private const val TAG = "BackgroundGathering"
     private const val DEBUG = false // hardcoded debug flag because data should not be logged even in normal debug mode
     private val scope = CoroutineScope(Dispatchers.IO)

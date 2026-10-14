@@ -1102,6 +1102,7 @@ public final class InputLogic {
             }
         }
         inputTransaction.setRequiresUpdateSuggestions();
+        inputTransaction.requireShiftUpdate(InputTransaction.SHIFT_UPDATE_NOW);
     }
 
     private boolean isCursorAtStartOrAfterSeparator(SettingsValues settingsValues) {

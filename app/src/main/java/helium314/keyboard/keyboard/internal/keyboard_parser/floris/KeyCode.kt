@@ -88,6 +88,7 @@ object KeyCode {
     //const val IME_SHOW_UI =                 -231
     const val IME_HIDE_UI =                 -232
     const val VOICE_INPUT =                 -233
+    const val HANDWRITE_INPUT =             -234
 
     //const val TOGGLE_SMARTBAR_VISIBILITY =  -241
     //const val TOGGLE_ACTIONS_OVERFLOW =     -242
@@ -208,7 +209,7 @@ object KeyCode {
         MEDIA_PREVIOUS, VOL_UP, VOL_DOWN, MUTE, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, BACK,
         TIMESTAMP, CTRL_LEFT, CTRL_RIGHT, ALT_LEFT, ALT_RIGHT, META_LEFT, META_RIGHT, SEND_INTENT_ONE, SEND_INTENT_TWO,
         SEND_INTENT_THREE, EMOJI_SEARCH, INLINE_EMOJI_SEARCH_DONE, META_LOCK,
-        BACKGROUND_GATHERING, BACKGROUND_GATHERING_TEMP_OFF
+        BACKGROUND_GATHERING, BACKGROUND_GATHERING_TEMP_OFF, HANDWRITE_INPUT
         -> this
 
         // conversion

@@ -207,6 +207,10 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
             latinIME.requestHideSelf(0)
             true
         }
+        KeyboardActionListener.SwipeAction.HANDWRITING -> {
+            onCodeInput(KeyCode.HANDWRITE_INPUT, Constants.NOT_A_COORDINATE, Constants.NOT_A_COORDINATE, false)
+            true
+        }
         KeyboardActionListener.SwipeAction.TOUCHPAD_MODE -> {
             // Activate touchpad mode - the actual cursor movement will be handled in PointerTracker
 

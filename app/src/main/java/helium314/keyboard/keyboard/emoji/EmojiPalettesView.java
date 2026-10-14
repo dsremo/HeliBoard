@@ -248,15 +248,40 @@ public final class EmojiPalettesView extends LinearLayout
         iconView.setOnClickListener(this);
     }
 
+    private static final String TAG_EMOJI_SEARCH = "emoji_search_tab";
+
+    private void addSearchTab(LinearLayout host) {
+        final ImageView iconView = new ImageView(getContext());
+        mColors.setBackground(iconView, ColorType.STRIP_BACKGROUND);
+        mColors.setColor(iconView, ColorType.EMOJI_CATEGORY);
+        iconView.setScaleType(ImageView.ScaleType.CENTER);
+        iconView.setImageDrawable(helium314.keyboard.keyboard.internal.KeyboardIconsSet.Companion.getInstance()
+                .getIconDrawable(helium314.keyboard.keyboard.internal.KeyboardIconsSet.NAME_SEARCH_KEY));
+        iconView.setContentDescription(getContext().getString(R.string.emoji_search_title));
+        iconView.setTag(TAG_EMOJI_SEARCH);
+        host.addView(iconView);
+        iconView.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f));
+        iconView.setOnClickListener(this);
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     public void initialize() { // needs to be delayed for access to EmojiTabStrip, which is not a child of this view
         if (initialized) return;
         mEmojiCategory.initialize();
         mTabStrip = (LinearLayout) KeyboardSwitcher.getInstance().getEmojiTabStrip();
         if (Settings.getValues().mSecondaryStripVisible) {
+            addSearchTab(mTabStrip);
             for (EmojiCategory.CategoryProperties properties : mEmojiCategory.getShownCategories()) {
                 addTab(mTabStrip, properties.getCategory());
             }
+        }
+
+        final android.widget.TextView emojiSearchBar = findViewById(R.id.emoji_search_bar);
+        if (emojiSearchBar != null) {
+            emojiSearchBar.setTextColor(mColors.get(ColorType.KEY_TEXT));
+            mColors.setBackground(emojiSearchBar, ColorType.STRIP_BACKGROUND);
+            emojiSearchBar.setOnClickListener(view -> mKeyboardActionListener.onCodeInput(
+                    KeyCode.EMOJI_SEARCH, NOT_A_COORDINATE, NOT_A_COORDINATE, false));
         }
 
         mPager = findViewById(R.id.emoji_pager);
@@ -277,6 +302,11 @@ public final class EmojiPalettesView extends LinearLayout
     @Override
     public void onClick(View v) {
         final Object tag = v.getTag();
+        if (TAG_EMOJI_SEARCH.equals(tag)) {
+            AudioAndHapticFeedbackManager.getInstance().performHapticAndAudioFeedback(KeyCode.NOT_SPECIFIED, this, HapticEvent.KEY_PRESS);
+            mKeyboardActionListener.onCodeInput(KeyCode.EMOJI_SEARCH, NOT_A_COORDINATE, NOT_A_COORDINATE, false);
+            return;
+        }
         if (tag instanceof EmojiCategory.Category category) {
             AudioAndHapticFeedbackManager.getInstance().performHapticAndAudioFeedback(KeyCode.NOT_SPECIFIED, this, HapticEvent.KEY_PRESS);
             if (category != mEmojiCategory.getCurrentCategory()) {

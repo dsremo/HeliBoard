@@ -592,7 +592,7 @@
         android:imeSubtypeLocale="hi"
         android:languageTag="hi"
         android:imeSubtypeMode="keyboard"
-        android:imeSubtypeExtraValue="KeyboardLayoutSet=MAIN:hindi_compact,NoShiftKey,EmojiCapable"
+        android:imeSubtypeExtraValue="KeyboardLayoutSet=MAIN:hindi_compact,EmojiCapable"
         android:isAsciiCapable="false"
     />
      <subtype android:icon="@drawable/ic_ime_switcher"

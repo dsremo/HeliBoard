@@ -33,7 +33,7 @@ enum class KeyType {
     UNSPECIFIED;    // empty background
 
     override fun toString(): String {
-        return super.toString().lowercase()
+        return super.toString().lowercase(java.util.Locale.ROOT)
     }
 
     companion object {
@@ -44,7 +44,7 @@ enum class KeyType {
                 "action" -> ENTER_EDITING
                 "shift" -> LOCK
                 "normal" -> CHARACTER
-                else -> valueOf(string.uppercase())
+                else -> valueOf(string.uppercase(java.util.Locale.ROOT))
             }
         }
     }

@@ -55,6 +55,7 @@ object SubtypeSettings {
     }
 
     fun addEnabledSubtype(prefs: SharedPreferences, newSubtype: InputMethodSubtype) {
+        DictionaryInfoUtils.clearEmojiDictLocaleCache()
         val subtype = newSubtype.toSettingsSubtype()
         val subtypes = createSettingsSubtypes(prefs.getString(Settings.PREF_ENABLED_SUBTYPES, Defaults.PREF_ENABLED_SUBTYPES)!!) + subtype
         val newString = createPrefSubtypes(subtypes)
@@ -69,6 +70,7 @@ object SubtypeSettings {
 
     /** @return whether subtype was actually removed */
     fun removeEnabledSubtype(context: Context, subtype: InputMethodSubtype): Boolean {
+        DictionaryInfoUtils.clearEmojiDictLocaleCache()
         val prefs = context.prefs()
         if (!removeEnabledSubtype(prefs, subtype.toSettingsSubtype())) {
             if (SubtypeUtilsAdditional.isAdditionalSubtype(subtype))
@@ -187,6 +189,7 @@ object SubtypeSettings {
     }
 
     fun reloadEnabledSubtypes(context: Context) {
+        DictionaryInfoUtils.clearEmojiDictLocaleCache()
         enabledSubtypes.clear()
         loadAdditionalSubtypes(context.prefs())
         loadEnabledSubtypes(context)

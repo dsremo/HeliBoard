@@ -100,6 +100,9 @@ import helium314.keyboard.latin.common.splitOnWhitespace
 import helium314.keyboard.latin.dictionary.Dictionary
 import helium314.keyboard.latin.dictionary.DictionaryFactory
 import helium314.keyboard.latin.settings.Settings
+import helium314.keyboard.latin.common.StringUtils
+import helium314.keyboard.latin.utils.JsonUtils
+import helium314.keyboard.latin.settings.Defaults
 import helium314.keyboard.latin.utils.CloseIcon
 import helium314.keyboard.latin.utils.DictionaryInfoUtils
 import helium314.keyboard.latin.utils.Log
@@ -143,7 +146,7 @@ class EmojiSearchActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             LocalContext.current.setTheme(KeyboardTheme.getKeyboardTheme(this).mStyleId)
-            Surface(modifier = Modifier.fillMaxSize(), color = Color(0x80000000)) {
+            Surface(modifier = Modifier.fillMaxSize(), color = Color.Transparent) {
                 var heightDp by remember { mutableStateOf(0.dp) }
                 Column(modifier = Modifier.fillMaxSize().clickable(onClick = { cancel() })
                     .windowInsetsPadding(WindowInsets.safeDrawing.exclude(WindowInsets(bottom = heightDp))),
@@ -173,20 +176,6 @@ class EmojiSearchActivity : ComponentActivity() {
                             heightDp = with(localDensity) { it.size.height.toDp() }
                         }) {
                         val fontFamily = remember { KeyboardTypeface.customFontFamily() }
-                        Row(modifier = Modifier.fillMaxWidth().height(30.dp)) {
-                            IconButton(onClick = { cancel() }) {
-                                Icon(painter = painterResource(R.drawable.ic_arrow_back),
-                                    stringResource(R.string.spoken_description_action_previous),
-                                    tint = Color(colors.get(ColorType.EMOJI_KEY_TEXT)))
-                            }
-                            Text(text = stringResource(R.string.emoji_search_title), fontSize = 18.sp,
-                                fontFamily = fontFamily,
-                                color = Color(colors.get(ColorType.EMOJI_KEY_TEXT)),
-                                modifier = Modifier.fillMaxWidth().align(Alignment.CenterVertically))
-                        }
-                        key(emojiPageKeyboardView) {
-                            AndroidView({ emojiPageKeyboardView }, modifier = Modifier.wrapContentHeight().fillMaxWidth())
-                        }
                         val focusRequester = remember { FocusRequester() }
                         var text by remember { mutableStateOf(TextFieldValue(searchText, selection = TextRange(searchText.length))) }
                         val textFieldColors = TextFieldDefaults.colors().copy(
@@ -244,6 +233,9 @@ class EmojiSearchActivity : ComponentActivity() {
                                     interactionSource = MutableInteractionSource(),
                                 )
                             }
+                        }
+                        key(emojiPageKeyboardView) {
+                            AndroidView({ emojiPageKeyboardView }, modifier = Modifier.wrapContentHeight().fillMaxWidth())
                         }
                         LaunchedEffect(Unit) { focusRequester.requestFocus() }
                     }
@@ -330,28 +322,14 @@ class EmojiSearchActivity : ComponentActivity() {
     private fun isAlphaKeyboard() = KeyboardSwitcher.getInstance().keyboardSwitchState !in
         setOf(KeyboardSwitcher.KeyboardSwitchState.EMOJI, KeyboardSwitcher.KeyboardSwitchState.CLIPBOARD)
 
-    private fun search(text: String) {
-        initDictionaryFacilitator(this)
-        if (dictionaryFacilitator == null) {
-            cancel()
-            return
-        }
+    private var noDictionaryReported = false
 
-        if (firstSearchDone && text == searchText) {
-            return
-        }
-
-        if (KeyboardSwitcher.getInstance().keyboard == null) {
-            /** Avoid crash in [SingleDictionaryFacilitator.getSuggestions] */
-            return
-        }
-
-        val keyboard = emojiPageKeyboardView.keyboard as DynamicGridKeyboard
+    private fun showEmojis(emojis: List<String>) {
+        val keyboard = emojiPageKeyboardView.keyboard as? DynamicGridKeyboard ?: return
         keyboard.removeAllKeys()
         firstKey = null
         pressedKey = null
-        dictionaryFacilitator!!.getSuggestions(text.splitOnWhitespace()).filter { it.isEmoji }.forEach {
-            val emoji = getEmojiDefaultVersion(it.word)
+        emojis.forEach { emoji ->
             val popupSpec = getEmojiPopupSpec(emoji)
             val keyParams = Key.KeyParams(emoji, emoji.getCode(), if (popupSpec != null) EMOJI_HINT_LABEL else null, popupSpec,
                 Key.LABEL_FLAGS_FONT_NORMAL, keyboardParams)
@@ -362,6 +340,34 @@ class EmojiSearchActivity : ComponentActivity() {
             if (firstKey == null) firstKey = key
         }
         emojiPageKeyboardView.invalidate()
+    }
+
+    private fun search(text: String) {
+        if (firstSearchDone && text == searchText) {
+            return
+        }
+
+        if (KeyboardSwitcher.getInstance().keyboard == null) {
+            /** Avoid crash in [SingleDictionaryFacilitator.getSuggestions] */
+            return
+        }
+
+        initDictionaryFacilitator(this)
+        if (dictionaryFacilitator == null) {
+            if (!noDictionaryReported) {
+                noDictionaryReported = true
+                Log.w(TAG, "no emoji dictionary for this language; showing recent emojis only")
+            }
+            showEmojis(recentEmojis())
+            searchText = text
+            firstSearchDone = true
+            return
+        }
+
+        val emojis = if (text.isBlank()) recentEmojis()
+            else dictionaryFacilitator!!.getSuggestions(text.splitOnWhitespace())
+                .filter { it.isEmoji }.map { getEmojiDefaultVersion(it.word) }
+        showEmojis(emojis)
 
         searchText = text
         firstSearchDone = true
@@ -369,6 +375,19 @@ class EmojiSearchActivity : ComponentActivity() {
             Log.d(TAG, "IME opened in search")
             imeOpened = true
         }
+    }
+
+    private fun recentEmojis(): List<String> {
+        val stored = prefs().getString(Settings.PREF_EMOJI_RECENT_KEYS, Defaults.PREF_EMOJI_RECENT_KEYS)
+        return runCatching {
+            JsonUtils.jsonStrToList(stored).mapNotNull { entry ->
+                when (entry) {
+                    is Int -> StringUtils.newSingleCodePointString(entry)
+                    is String -> entry
+                    else -> null
+                }
+            }
+        }.getOrDefault(emptyList())
     }
 
     private fun cancel() {
@@ -399,12 +418,22 @@ class EmojiSearchActivity : ComponentActivity() {
             "$PRIVATE_IME_OPTIONS_PREFIX.${privateImeOptions.height},"
 
         private fun initDictionaryFacilitator(context: Context) {
-            val locale = RichInputMethodManager.getInstance().currentSubtype.locale
+            val subtypeLocale = RichInputMethodManager.getInstance().currentSubtype.locale
+            val locale = emojiDictLocale(subtypeLocale, context) ?: subtypeLocale
             if (dictionaryFacilitator?.isForLocale(locale) != true) {
                 dictionaryFacilitator?.closeDictionaries()
-                dictionaryFacilitator = DictionaryInfoUtils.getCachedDictForLocaleAndType(locale, Dictionary.TYPE_EMOJI, context)
+                dictionaryFacilitator = DictionaryInfoUtils.getOrExtractDictForLocaleAndType(locale, Dictionary.TYPE_EMOJI, context)
                     ?.let { DictionaryFactory.getDictionary(it, locale) }?.let { SingleDictionaryFacilitator(it) }
             }
         }
+
+        fun emojiDictLocale(
+            subtypeLocale: java.util.Locale,
+            context: Context
+        ): java.util.Locale? = listOf(
+            subtypeLocale,
+            java.util.Locale(subtypeLocale.language),
+            java.util.Locale.ENGLISH
+        ).firstOrNull { DictionaryInfoUtils.hasDictForLocaleAndType(it, Dictionary.TYPE_EMOJI, context) }
     }
 }

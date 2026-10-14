@@ -31,6 +31,7 @@ import helium314.keyboard.latin.permissions.PermissionsUtil
 import helium314.keyboard.latin.personalization.UserHistoryDictionary
 import helium314.keyboard.latin.settings.Settings
 import helium314.keyboard.latin.settings.SettingsValuesForSuggestion
+import helium314.keyboard.latin.utils.OffensiveWords
 import helium314.keyboard.latin.utils.Log
 import helium314.keyboard.latin.utils.SubtypeSettings
 import helium314.keyboard.latin.utils.SuggestionResults
@@ -136,6 +137,7 @@ class DictionaryFacilitatorImpl : DictionaryFacilitator {
         listener: DictionaryInitializationListener?
     ) {
         Log.i(TAG, "resetDictionaries, force reloading main dictionary: $forceReloadMainDictionary")
+        OffensiveWords.init(context)
 
         val locales = getUsedLocales(newLocale, context)
 
@@ -342,6 +344,8 @@ class DictionaryFacilitatorImpl : DictionaryFacilitator {
         val mainFreq = dictionaryGroup.getDict(Dictionary.TYPE_MAIN)?.getFrequency(word) ?: Dictionary.NOT_A_PROBABILITY
         if (mainFreq == 0 && blockPotentiallyOffensive)
             return
+        if (blockPotentiallyOffensive && OffensiveWords.isOffensive(word))
+            return
         if (tryChangingWords)
             tryChangingWords = ngramContext.changeWordIfAfterBeginningOfSentence(changeFrom, changeTo)
 
@@ -489,17 +493,21 @@ class DictionaryFacilitatorImpl : DictionaryFacilitator {
         val proximityInfoHandle = keyboard.proximityInfo.nativeProximityInfo
         val weightOfLangModelVsSpatialModel = floatArrayOf(Dictionary.NOT_A_WEIGHT_OF_LANG_MODEL_VS_SPATIAL_MODEL)
 
-        val waitForOtherDicts = if (dictionaryGroups.size == 1) null else CountDownLatch(dictionaryGroups.size - 1)
-        val suggestionsArray = Array<List<SuggestedWordInfo>?>(dictionaryGroups.size) { null }
-        for (i in 1..dictionaryGroups.lastIndex) {
+        val activeGroups = if (dictionaryGroups.size <= 1) dictionaryGroups
+            else dictionaryGroups.filterIndexed { index, group ->
+                index == 0 || group.confidence >= DictionaryGroup.MAX_CONFIDENCE
+            }
+        val waitForOtherDicts = if (activeGroups.size == 1) null else CountDownLatch(activeGroups.size - 1)
+        val suggestionsArray = Array<List<SuggestedWordInfo>?>(activeGroups.size) { null }
+        for (i in 1..activeGroups.lastIndex) {
             scope.launch {
                 suggestionsArray[i] = getSuggestions(composedData, ngramContext, settingsValuesForSuggestion, sessionId,
-                    proximityInfoHandle, weightOfLangModelVsSpatialModel, dictionaryGroups[i])
+                    proximityInfoHandle, weightOfLangModelVsSpatialModel, activeGroups[i])
                 waitForOtherDicts?.countDown()
             }
         }
         suggestionsArray[0] = getSuggestions(composedData, ngramContext, settingsValuesForSuggestion, sessionId,
-            proximityInfoHandle, weightOfLangModelVsSpatialModel, dictionaryGroups[0])
+            proximityInfoHandle, weightOfLangModelVsSpatialModel, activeGroups[0])
         val suggestionResults = SuggestionResults(
             SuggestedWords.MAX_SUGGESTIONS, ngramContext.isBeginningOfSentenceContext, false
         )
@@ -792,10 +800,12 @@ private class DictionaryGroup(
         else null
     }
 
-    private val blacklist = hashSetOf<String>().apply {
+    private val blacklistLock = Any()
+
+    private val blacklist = java.util.Collections.synchronizedSet(hashSetOf<String>()).apply {
         if (blacklistFile?.isFile != true) return@apply
         scope.launch {
-            synchronized(this) {
+            synchronized(blacklistLock) {
                 try {
                     addAll(blacklistFile.readLines())
                 } catch (e: IOException) {
@@ -810,7 +820,7 @@ private class DictionaryGroup(
     fun addToBlacklist(word: String) {
         if (!blacklist.add(word) || blacklistFile == null) return
         scope.launch {
-            synchronized(this) {
+            synchronized(blacklistLock) {
                 try {
                     if (blacklistFile.isDirectory) blacklistFile.delete()
                     blacklistFile.appendText("$word\n")
@@ -824,7 +834,7 @@ private class DictionaryGroup(
     fun removeFromBlacklist(word: String) {
         if (!blacklist.remove(word) || blacklistFile == null) return
         scope.launch {
-            synchronized(this) {
+            synchronized(blacklistLock) {
                 try {
                     val newLines = blacklistFile.readLines().filterNot { it == word }
                     blacklistFile.writeText(newLines.joinToString("\n"))

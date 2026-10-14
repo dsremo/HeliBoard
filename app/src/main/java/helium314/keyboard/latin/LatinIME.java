@@ -692,6 +692,7 @@ public class LatinIME extends InputMethodService implements
 
     @Override
     public void onDestroy() {
+        helium314.keyboard.dsremo.HandwritingRecogniser.INSTANCE.onFinishInput(this);
         mClipboardHistoryManager.onDestroy();
         mDictionaryFacilitator.closeDictionaries();
         mSettings.onDestroy();
@@ -1036,6 +1037,7 @@ public class LatinIME extends InputMethodService implements
     void onFinishInputViewInternal(final boolean finishingInput) {
         super.onFinishInputView(finishingInput);
         Log.i(TAG, "onFinishInputView");
+        helium314.keyboard.dsremo.HandwritingController.hide(mInputView);
         cleanupInternalStateForFinishInput();
     }
 
@@ -1413,6 +1415,11 @@ public class LatinIME extends InputMethodService implements
     public void onEvent(@NonNull final Event event) {
         if (KeyCode.VOICE_INPUT == event.getKeyCode()) {
             mRichImm.switchToShortcutIme(this);
+            return;
+        }
+        if (KeyCode.HANDWRITE_INPUT == event.getKeyCode()) {
+            helium314.keyboard.dsremo.HandwritingController.toggle(this, mInputView);
+            return;
         }
         final InputTransaction completeInputTransaction =
                 mInputLogic.onCodeInput(mSettings.getCurrent(), event,
@@ -1676,6 +1683,10 @@ public class LatinIME extends InputMethodService implements
     // Hooks for hardware keyboard
     @Override
     public boolean onKeyDown(final int keyCode, final KeyEvent keyEvent) {
+        if (keyCode == KeyEvent.KEYCODE_BACK
+                && helium314.keyboard.dsremo.HandwritingController.hide(mInputView)) {
+            return true;
+        }
         if (mKeyboardActionListener.onKeyDown(keyCode, keyEvent))
             return true;
         return super.onKeyDown(keyCode, keyEvent);

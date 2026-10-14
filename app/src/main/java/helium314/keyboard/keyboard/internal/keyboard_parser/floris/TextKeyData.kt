@@ -106,7 +106,7 @@ sealed interface KeyData : AbstractKeyData {
             if (!params.mId.oneHandedModeEnabled && !Settings.getValues().mIsFloatingKeyboard)
                 keys.add("!icon/start_onehanded_mode_key|!code/key_toggle_onehanded")
             if (!params.mId.deviceLocked)
-                keys.add(ToolbarKey.FLOATING.name.lowercase())
+                keys.add(ToolbarKey.FLOATING.name.lowercase(java.util.Locale.ROOT))
             if (!params.mId.deviceLocked)
                 keys.add("!icon/settings_key|!code/key_settings")
             if (shouldShowTldPopups(params)) {

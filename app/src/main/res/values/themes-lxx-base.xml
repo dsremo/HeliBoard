@@ -63,6 +63,7 @@
         <item name="iconEmojiActivitiesTab">@drawable/ic_emoji_activities_lxx</item>
         <item name="iconEmojiObjectsTab">@drawable/ic_emoji_objects_lxx</item>
         <item name="iconEmojiSymbolsTab">@drawable/ic_emoji_symbols_lxx</item>
+        <item name="iconEmojiAllTab">@drawable/ic_emoji_all_lxx</item>
         <item name="iconEmojiFlagsTab">@drawable/ic_emoji_flags_lxx</item>
         <item name="iconEmojiEmoticonsTab">@drawable/ic_emoji_emoticons_lxx</item>
     </style>

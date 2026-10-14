@@ -42,6 +42,20 @@
     <string name="settings_screen_preferences">Preferences</string>
     <!-- Settings screen title for gesture typing preferences -->
     <string name="settings_screen_gesture">Gesture Typing</string>
+    <!-- Settings screen title for handwriting preferences -->
+    <string name="settings_screen_handwriting">Handwriting</string>
+    <!-- Setting to enable/disable handwriting toolbar key -->
+    <string name="handwriting_enabled">Enable handwriting</string>
+    <string name="handwriting_enabled_summary">Show handwriting overlay when its toolbar key is tapped</string>
+    <!-- Setting to auto-scope recogniser to current subtype language -->
+    <string name="handwriting_follow_subtype">Follow keyboard language</string>
+    <string name="handwriting_follow_subtype_summary">Use the active subtype language for recognition</string>
+    <!-- Setting to override the recogniser language -->
+    <string name="handwriting_recogniser_language">Recogniser language</string>
+    <string name="handwriting_recogniser_language_summary">BCP-47 tag (e.g. en-US, hi-Deva, ta) used when not following the keyboard language</string>
+    <!-- Setting to keep downloaded models cached -->
+    <string name="handwriting_keep_model">Keep downloaded models</string>
+    <string name="handwriting_keep_model_summary">Retain recogniser models on disk between sessions</string>
     <!-- Settings screen title for text correction options -->
     <string name="settings_screen_correction">Text correction</string>
     <!-- Settings screen title for advanced settings -->

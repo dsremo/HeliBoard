@@ -16,6 +16,7 @@ import android.net.Uri;
 import helium314.keyboard.latin.utils.Log;
 
 import helium314.keyboard.dictionarypack.DictionaryPackConstants;
+import helium314.keyboard.latin.utils.DictionaryInfoUtils;
 
 /**
  * Receives broadcasts pertaining to dictionary management and takes the appropriate action.
@@ -97,6 +98,7 @@ public final class DictionaryPackInstallBroadcastReceiver extends BroadcastRecei
             // ADDED broadcast.
             mService.resetSuggestMainDict();
         } else if (DictionaryPackConstants.NEW_DICTIONARY_INTENT_ACTION.equals(action)) {
+            DictionaryInfoUtils.clearEmojiDictLocaleCache();
             if (null == mService) {
                 Log.e(TAG, "Called with intent " + action + " but we don't know the service: this "
                         + "should never happen");

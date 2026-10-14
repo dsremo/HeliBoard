@@ -51,7 +51,8 @@ internal class EmojiCategory(private val context: Context, private val layoutSet
         CategoryProperties(Category.OBJECTS),
         CategoryProperties(Category.SYMBOLS),
         if (canShowFlagEmoji()) CategoryProperties(Category.FLAGS) else null,
-        CategoryProperties(Category.EMOTICONS)
+        CategoryProperties(Category.EMOTICONS),
+        CategoryProperties(Category.ALL)
     )
 
     private val categoryKeyboardMap = ConcurrentHashMap<Long, DynamicGridKeyboard>()
@@ -193,7 +194,8 @@ internal class EmojiCategory(private val context: Context, private val layoutSet
         OBJECTS(KeyboardElement.EMOJI_OBJECTS, R.styleable.EmojiPalettesView_iconEmojiObjectsTab),
         SYMBOLS(KeyboardElement.EMOJI_SYMBOLS, R.styleable.EmojiPalettesView_iconEmojiSymbolsTab),
         FLAGS(KeyboardElement.EMOJI_FLAGS, R.styleable.EmojiPalettesView_iconEmojiFlagsTab),
-        EMOTICONS(KeyboardElement.EMOJI_EMOTICONS, R.styleable.EmojiPalettesView_iconEmojiEmoticonsTab)
+        EMOTICONS(KeyboardElement.EMOJI_EMOTICONS, R.styleable.EmojiPalettesView_iconEmojiEmoticonsTab),
+        ALL(KeyboardElement.EMOJI_ALL, R.styleable.EmojiPalettesView_iconEmojiAllTab)
     }
 
     companion object {

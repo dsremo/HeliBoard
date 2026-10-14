@@ -15,4 +15,9 @@
     <include
         android:id="@+id/main_keyboard_frame"
         layout="@layout/main_keyboard_frame" />
+    <helium314.keyboard.dsremo.HandwritingOverlay
+        android:id="@+id/dsremo_handwriting_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
 </helium314.keyboard.latin.InputView>

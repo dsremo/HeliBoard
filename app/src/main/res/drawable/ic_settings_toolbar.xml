@@ -1,13 +1,17 @@
 <!--
-    icon available in Android Studio
+    SPDX-FileCopyrightText: Material Design Authors / Google LLC
     SPDX-License-Identifier: Apache-2.0
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:height="40dp"
-    android:width="40dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="960"
+    android:viewportHeight="960">
     <path
         android:fillColor="@color/foreground"
-        android:pathData="M8.59,16.59L13.17,12 8.59,7.41 10,6l6,6 -6,6 -1.41,-1.41z"/>
+        android:fillType="evenOdd"
+        android:pathData="M120,300 Q120,260 160,260 H800 Q840,260 840,300 V660 Q840,700 800,700 H160 Q120,700 120,660 Z M200,340 Q180,340 180,360 V600 Q180,620 200,620 H760 Q780,620 780,600 V360 Q780,340 760,340 Z"/>
+    <path
+        android:fillColor="@color/foreground"
+        android:pathData="M280,480 A40,40 0 1 0 360,480 A40,40 0 1 0 280,480 Z M440,480 A40,40 0 1 0 520,480 A40,40 0 1 0 440,480 Z M600,480 A40,40 0 1 0 680,480 A40,40 0 1 0 600,480 Z"/>
 </vector>

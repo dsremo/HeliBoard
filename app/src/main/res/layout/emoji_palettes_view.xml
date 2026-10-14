@@ -15,6 +15,17 @@
     android:background="@android:color/transparent"
     style="?attr/emojiPalettesViewStyle"
 >
+    <TextView
+        android:id="@+id/emoji_search_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/config_emoji_search_bar_height"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:textSize="15sp"
+        android:text="@string/search_field_placeholder" />
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/emoji_pager"
         android:layout_width="match_parent"

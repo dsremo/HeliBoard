@@ -173,6 +173,10 @@ public final class Settings implements SharedPreferences.OnSharedPreferenceChang
     public static final String PREF_CLIPBOARD_FILES_SIZE_LIMIT = "clipboard_history_files_size_limit";
 
     public static final String PREF_ADD_TO_PERSONAL_DICTIONARY = "add_to_personal_dictionary";
+    public static final String PREF_HANDWRITING_ENABLED = "handwriting_enabled";
+    public static final String PREF_HANDWRITING_FOLLOW_SUBTYPE = "handwriting_follow_subtype";
+    public static final String PREF_HANDWRITING_LANGUAGE = "handwriting_language";
+    public static final String PREF_HANDWRITING_KEEP_MODEL = "handwriting_keep_model";
     public static final String PREF_NAVBAR_COLOR = "navbar_color";
     public static final String PREF_ENABLED_SUBTYPES = "enabled_subtypes";
     public static final String PREF_SELECTED_SUBTYPE = "selected_subtype";

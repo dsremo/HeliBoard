@@ -70,6 +70,7 @@
         <item name="iconEmojiActivitiesTab">@drawable/ic_emoji_activities_rounded</item>
         <item name="iconEmojiObjectsTab">@drawable/ic_emoji_objects_rounded</item>
         <item name="iconEmojiSymbolsTab">@drawable/ic_emoji_symbols_rounded</item>
+        <item name="iconEmojiAllTab">@drawable/ic_emoji_all_rounded</item>
         <item name="iconEmojiFlagsTab">@drawable/ic_emoji_flags_rounded</item>
         <item name="iconEmojiEmoticonsTab">@drawable/ic_emoji_emoticons_rounded</item>
     </style>
