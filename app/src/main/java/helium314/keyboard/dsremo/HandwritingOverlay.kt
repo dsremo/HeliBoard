@@ -66,13 +66,14 @@ class HandwritingOverlay @JvmOverloads constructor(
         root.addView(hintView)
         root.addView(canvasView)
         root.addView(buttons)
-        addView(root, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
+        addView(root, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
         isClickable = true
         isFocusable = true
     }
 
     fun showOver(keyboardFrame: View?) {
         val frameHeight = keyboardFrame?.height ?: 0
+        android.util.Log.d("DsremoHandwrite", "showOver frameHeight=$frameHeight")
         val params = layoutParams
         if (params != null) {
             params.height = if (frameHeight > 0) frameHeight else ViewGroup.LayoutParams.WRAP_CONTENT

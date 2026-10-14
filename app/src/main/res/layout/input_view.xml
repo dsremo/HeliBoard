@@ -19,5 +19,6 @@
         android:id="@+id/dsremo_handwriting_overlay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
         android:visibility="gone" />
 </helium314.keyboard.latin.InputView>
