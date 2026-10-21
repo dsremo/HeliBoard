@@ -141,6 +141,16 @@ android {
     }
 }
 
+// ML Kit drags in okhttp 3.12.1, which accepts the wrong certificate
+// (GHSA-3cqm-mf7h-prrj / A-171980069), and okio 2.0.0 (CVE-2023-3635). A keyboard sees
+// every keystroke, so pin both to patched versions rather than ship a TLS flaw.
+configurations.configureEach {
+    resolutionStrategy {
+        force("com.squareup.okhttp3:okhttp:4.12.0")
+        force("com.squareup.okio:okio:3.6.0")
+    }
+}
+
 dependencies {
     // androidx
     implementation("androidx.core:core-ktx:1.17.0") // 1.18.0 requires minSdk 23
