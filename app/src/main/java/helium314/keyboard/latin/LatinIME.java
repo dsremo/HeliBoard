@@ -1751,13 +1751,15 @@ public class LatinIME extends InputMethodService implements
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null && EmojiSearchActivity.EMOJI_SEARCH_DONE_ACTION.equals(intent.getAction()) && ! isEmojiSearch()) {
+            // Emojis were dropped when the search was dismissed by hiding the keyboard,
+            // because that path returned before any text was committed.
+            if (intent.hasExtra(EmojiSearchActivity.EMOJI_KEY)) {
+                onTextInput(intent.getStringExtra(EmojiSearchActivity.EMOJI_KEY));
+            }
             if (intent.getBooleanExtra(EmojiSearchActivity.IME_CLOSED_KEY, false)) {
                 requestHideSelf(0);
             } else {
                 mHandler.postDelayed(() -> KeyboardSwitcher.getInstance().setEmojiKeyboard(), 100);
-                if (intent.hasExtra(EmojiSearchActivity.EMOJI_KEY)) {
-                     onTextInput(intent.getStringExtra(EmojiSearchActivity.EMOJI_KEY));
-                }
             }
 
             stopSelf(startId); // Allow the service to be destroyed when unbound

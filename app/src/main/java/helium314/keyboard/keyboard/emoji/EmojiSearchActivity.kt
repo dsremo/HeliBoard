@@ -128,6 +128,7 @@ class EmojiSearchActivity : ComponentActivity() {
     private var keyHeight by Delegates.notNull<Float>()
     private var firstKey: Key? = null
     private var pressedKey: Key? = null
+    private val pickedEmojis = StringBuilder()
     private var imeVisible = false
     private var imeClosed = false
 
@@ -208,6 +209,7 @@ class EmojiSearchActivity : ComponentActivity() {
                                 keyboardActions = KeyboardActions(onDone = {
                                     if (Settings.getValues().mAutoCorrectEnabled) pressedKey = firstKey
                                     finish()
+
                                 }),
                                 singleLine = true,
                                 cursorBrush = SolidColor(textFieldColors.cursorColor)
@@ -266,12 +268,12 @@ class EmojiSearchActivity : ComponentActivity() {
         val intent = Intent(this, LatinIME::class.java).setAction(EMOJI_SEARCH_DONE_ACTION)
             .putExtra(IME_CLOSED_KEY, imeClosed)
         pressedKey?.let {
-            intent.putExtra(EMOJI_KEY, if (it.code == KeyCode.MULTIPLE_CODE_POINTS)
-                it.getOutputText()
-            else
-                Character.toString(it.code))
-
+            pickedEmojis.append(emojiTextOf(it))
             KeyboardSwitcher.getInstance().emojiPalettesView.addRecentKey(it)
+        }
+        if (pickedEmojis.isNotEmpty()) {
+            intent.putExtra(EMOJI_KEY, pickedEmojis.toString())
+            pickedEmojis.setLength(0)
         }
         startService(intent)
         super.onStop()
@@ -309,8 +311,10 @@ class EmojiSearchActivity : ComponentActivity() {
             }
 
             override fun onReleaseKey(key: Key) {
-                pressedKey = key
-                finish()
+                // LatinIME drops the delivery intent while emoji search is open, so each
+                // pick is buffered here and the whole run is sent when the screen closes.
+                pickedEmojis.append(emojiTextOf(key))
+                KeyboardSwitcher.getInstance().emojiPalettesView.addRecentKey(key)
             }
 
             override fun getDescription(emoji: String): String? = if (Settings.getValues().mShowEmojiDescriptions)
@@ -392,6 +396,10 @@ class EmojiSearchActivity : ComponentActivity() {
             }
         }.getOrDefault(emptyList())
     }
+
+    private fun emojiTextOf(key: Key): String =
+        if (key.code == KeyCode.MULTIPLE_CODE_POINTS) key.getOutputText().orEmpty()
+        else Character.toString(key.code)
 
     private fun cancel() {
         finish()
