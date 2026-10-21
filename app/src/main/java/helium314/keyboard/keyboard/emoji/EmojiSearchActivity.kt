@@ -142,6 +142,9 @@ class EmojiSearchActivity : ComponentActivity() {
     @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // searchText is static, so a previous session's query came back on reopen.
+        // Keep it only across a configuration change, not across openings.
+        if (savedInstanceState == null) searchText = ""
         init()
         enableEdgeToEdge()
         setContent {
