@@ -208,7 +208,9 @@ class KeyboardActionListenerImpl(private val latinIME: LatinIME, private val inp
             true
         }
         KeyboardActionListener.SwipeAction.HANDWRITING -> {
-            onCodeInput(KeyCode.HANDWRITE_INPUT, Constants.NOT_A_COORDINATE, Constants.NOT_A_COORDINATE, false)
+            // This fires on every swipe step; toggling each time left the overlay closed after an even count.
+            if (!helium314.keyboard.dsremo.HandwritingController.isShowing(keyboardSwitcher.mainKeyboardView?.rootView))
+                onCodeInput(KeyCode.HANDWRITE_INPUT, Constants.NOT_A_COORDINATE, Constants.NOT_A_COORDINATE, false)
             true
         }
         KeyboardActionListener.SwipeAction.TOUCHPAD_MODE -> {
