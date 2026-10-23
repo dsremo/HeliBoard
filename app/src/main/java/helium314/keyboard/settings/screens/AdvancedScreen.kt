@@ -129,6 +129,7 @@ fun createAdvancedSettings(context: Context) = listOf(
             stringResource(R.string.space_swipe_toggle_numpad_entry) to KeyboardActionListener.SwipeAction.TOGGLE_NUMPAD.name,
             stringResource(R.string.space_swipe_hide_keyboard_entry) to KeyboardActionListener.SwipeAction.HIDE_KEYBOARD.name,
             stringResource(R.string.space_swipe_touchpad_mode_entry) to KeyboardActionListener.SwipeAction.TOUCHPAD_MODE.name,
+            stringResource(R.string.space_swipe_handwriting_entry) to KeyboardActionListener.SwipeAction.HANDWRITING.name,
             stringResource(R.string.action_none) to KeyboardActionListener.SwipeAction.NONE.name,
         )
         ListPreference(it, items, Defaults.PREF_SPACE_VERTICAL_SWIPE)

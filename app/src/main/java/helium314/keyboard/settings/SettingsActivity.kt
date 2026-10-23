@@ -160,6 +160,7 @@ open class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPre
         }
 
         enableEdgeToEdge()
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) com.dsremo.sso.DsremoUpdateUi.checkAndPrompt(this, "keyboard")
     }
 
     override fun onStart() {
@@ -181,6 +182,7 @@ open class SettingsActivity : ComponentActivity(), SharedPreferences.OnSharedPre
     override fun onResume() {
         super.onResume()
         paused = false
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) runCatching { com.dsremo.sso.DsremoUpdater.resumePendingInstall(this) }
     }
 
     fun setForceTheme(theme: String?, night: Boolean?) {

@@ -933,6 +933,7 @@ New dictionary:
     <string name="space_swipe_hide_keyboard_entry">Hide keyboard</string>
     <!-- Option to use touchpad when swiping the spacebar -->
     <string name="space_swipe_touchpad_mode_entry">Touchpad mode</string>
+    <string name="space_swipe_handwriting_entry">Handwriting</string>
     <!-- Option to adjust spacebar-touchpad sensitivity -->
     <string name="touchpad_sensitivity">Touchpad sensitivity</string>
     <!-- Option to enable or disable automatic scrolling when the cursor reaches the keyboard edges -->
