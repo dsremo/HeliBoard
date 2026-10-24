@@ -420,7 +420,8 @@ public final class InputLogic {
             // we'd have the suggestion strip noticeably janky. To avoid that, we don't clear
             // it here, which means we'll keep outdated suggestions for a split second but the
             // visual result is better.
-            resetEntireInputState(newSelStart, newSelEnd, false /* clearSuggestionStrip */);
+            final boolean fieldEmptied = newSelStart == 0 && newSelEnd == 0 && !mConnection.hasTextAfterCursor();
+            resetEntireInputState(newSelStart, newSelEnd, fieldEmptied /* clearSuggestionStrip */);
             // If the user is in the middle of correcting a word, we should learn it before moving
             // the cursor away.
             if (!TextUtils.isEmpty(mWordBeingCorrectedByCursor)) {
